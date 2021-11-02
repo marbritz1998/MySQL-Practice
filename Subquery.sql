@@ -159,11 +159,11 @@ AND salary > (SELECT avg(salary) FROM employees);
 -- Problem 8.) Write a query to find the name (first_name, last_name), and salary of the employees who earns more than the earning of Mr. Bell
 SELECT first_name, last_name, salary
 FROM employees
-WHERE salary < (SELECT salary FROM employees WHERE last_name = 'Bell');
+WHERE salary > (SELECT salary FROM employees WHERE last_name = 'Bell');
 
 SELECT COUNT(first_name)
 FROM employees
-WHERE salary < (SELECT salary FROM employees WHERE last_name = 'Bell'); -- there is 42 entries
+WHERE salary > (SELECT salary FROM employees WHERE last_name = 'Bell'); -- there is 64 entries
 
 -- sample solution 8.)
 SELECT first_name, last_name, salary 
@@ -448,3 +448,62 @@ FROM employees  e2
 WHERE e2.salary <= e1.salary); -- this gives 2500
 -- man so what I did was not correct, these are some hard problems
 
+-- Problem 18.) Write a query to select last 10 records from a table
+SELECT * FROM employees ORDER BY employee_id LIMIT 97, 107;
+
+SELECT COUNT(first_name) FROM employees; -- entries = 97
+
+-- so I could kind of do this, but I had to write 2 queries, one to find the length of the column in order to know what to numbers to use in the limit
+
+-- Sample Solution 18.) 
+SELECT * FROM (
+SELECT * FROM employees ORDER BY employee_id DESC LIMIT 10) sub 
+ORDER BY employee_id ASC;
+
+
+-- Problem 19.) Write a query to list the department ID and name of all the departments where no employee is working
+SELECT department_id, department_name
+FROM departments d
+WHERE department_id NOT IN (SELECT department_id FROM employees);
+
+-- Sample Solution 19.) 
+SELECT * FROM departments 
+WHERE department_id 
+NOT IN (select department_id FROM employees);
+
+-- Problem 20.) Write a query to get 3 maximum salaries
+SELECT department_id,  MAX(salary)
+FROM employees
+GROUP BY department_id
+ORDER BY MAX(salary) DESC;
+
+-- Sample Solution 20.)
+SELECT DISTINCT salary 
+FROM employees a 
+WHERE 3 >= (SELECT COUNT(DISTINCT salary) 
+FROM employees b 
+WHERE b.salary >= a.salary) 
+ORDER BY a.salary DESC;
+
+-- Problem 21.) Write a query to get 3 minimum salaries
+SELECT DISTINCT(salary)
+FROM employees e1
+WHERE 3 >= (SELECT COUNT(DISTINCT(salary)) FROM employees e2 WHERE e2.salary <= e1.salary)
+ORDER BY e1.salary DESC;
+
+-- Sample Solution 21.)
+SELECT DISTINCT salary 
+FROM employees a 
+WHERE  3 >= (SELECT COUNT(DISTINCT salary) 
+FROM employees b 
+WHERE b.salary <= a.salary) 
+ORDER BY a.salary DESC;
+
+
+-- Problem 22.) Write a query to get nth max salaries of employees
+SELECT *
+FROM employees emp1
+WHERE (1) = (   -- can change the 1 to any number
+SELECT COUNT(DISTINCT(emp2.salary))
+FROM employees emp2
+WHERE emp2.salary > emp1.salary);

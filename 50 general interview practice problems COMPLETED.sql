@@ -325,3 +325,61 @@ UNION
 SELECT * FROM (SELECT * FROM Worker W order by W.WORKER_ID DESC) AS W1 WHERE W1.WORKER_ID <=5; -- this doesn't show the last 5 records, it shows the first 5
 
 -- Problem 45.) Write an SQL query to print the name of employees having the highest salary in each department.
+SELECT department, CONCAT(first_name, " ",last_name) 'employee name', MAX(salary)
+FROM worker
+GROUP BY department; -- so this almost does what the problem wants, I just need the names
+
+SELECT w.department, CONCAT(w.first_name," ",w.last_name) employee_name, w.salary
+FROM (SELECT department, MAX(salary) max_salary FROM worker GROUP BY department) as salary_max
+INNER JOIN worker w ON salary_max.max_salary = w.salary;
+-- so this gives me 4 names, but it makes since as 2 of the names have the same salary in the department
+
+-- Sample Solution 45.)
+SELECT t.DEPARTMENT,t.FIRST_NAME,t.Salary from(SELECT max(Salary) as TotalSalary,DEPARTMENT from Worker group by DEPARTMENT) as TempNew 
+Inner Join Worker t on TempNew.DEPARTMENT=t.DEPARTMENT 
+ and TempNew.TotalSalary=t.Salary;
+ 
+ -- okay, so this is the same result and process that I did
+ 
+ 
+ -- Problem 46.) Write an SQL query to fetch three max salaries from a table.
+ SELECT DISTINCT(salary) FROM worker ORDER BY salary DESC LIMIT 3;
+ 
+SELECT salary FROM worker ORDER BY salary DESC LIMIT 3;
+
+-- not sure if they want distinct max salaries, so did one with distinct max salaries and one without the distinct max salaries
+
+-- sample solution 46.) 
+SELECT distinct Salary from worker a WHERE 3 >= (SELECT count(distinct Salary) from worker b WHERE a.Salary <= b.Salary) order by a.Salary desc;
+
+-- same solution as me, they just didn't want to use the LIMIT function
+
+-- Problem 47.) Write an SQL query to fetch three min salaries from a table.
+SELECT salary FROM worker ORDER BY salary LIMIT 3;
+
+-- or 
+SELECT DISTINCT salary FROM worker ORDER BY salary LIMIT 3;
+
+-- not using limit
+SELECT DISTINCT salary from worker w1 WHERE 3 >= (SELECT COUNT(DISTINCT salary) FROM worker w2 WHERE w1.salary >= w2.salary) ORDER BY w1.salary;
+
+-- Sample Solution 47.) 
+SELECT distinct Salary from worker a WHERE 3 >= (SELECT count(distinct Salary) from worker b WHERE a.Salary >= b.Salary) order by a.Salary desc;
+
+
+-- Problem 48.) Write an SQL query to fetch nth max salaries from a table.
+-- using limit
+SELECT DISTINCT salary FROM worker ORDER BY salary DESC LIMIT n;
+
+-- not using LIMIT
+SELECT DISTINCT salary from worker w1 WHERE n >= (SELECT COUNT(DISTINCT salary) FROM worker w2 WHERE w1.salary <= w2.salary) ORDER BY w1.salary DESC;
+
+
+-- Problem 49.) Write an SQL query to fetch departments along with the total salaries paid for each of them.
+SELECT department, SUM(salary) 'Total Salary Paid' FROM worker GROUP BY department;
+
+-- Problem 50.) Write an SQL query to fetch the names of workers who earn the highest salary.
+SELECT CONCAT(first_name, " ",last_name) 'employee name', salary FROM worker WHERE salary = (SELECT MAX(salary) FROM worker);
+
+-- Sample Solution 50.) 
+SELECT FIRST_NAME, SALARY from Worker WHERE SALARY=(SELECT max(SALARY) from Worker);

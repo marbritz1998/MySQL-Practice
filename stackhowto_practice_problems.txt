@@ -1,0 +1,2 @@
+for stack howto mysql practice problems:
+https://stackhowto.com/mysql-practice-exercises-with-solutions-part-1/
